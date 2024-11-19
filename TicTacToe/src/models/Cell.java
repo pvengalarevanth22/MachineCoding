@@ -6,6 +6,21 @@ public class Cell {
     private Player player;
     private CellState cellState;
 
+    public Cell(int row, int col) {
+        this.row = row;
+        this.col = col;
+        this.cellState = CellState.EMPTY;
+    }
+
+    public void printCell(){
+        if(cellState == CellState.EMPTY){
+            System.out.println("| - |");
+        }
+        else if(cellState == CellState.FILLED){
+            System.out.println("| "+player.getSymbol().getAchar()+" |");
+        }
+    }
+
     public int getRow() {
         return row;
     }
