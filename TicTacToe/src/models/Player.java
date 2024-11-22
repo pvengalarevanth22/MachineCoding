@@ -17,7 +17,7 @@ public class Player {
         this.scanner = new Scanner(System.in);
     }
 
-    public Move makeMove() {
+    public Move makeMove(Board board) {
         System.out.println("Please tell row where u want to move");
         int row = scanner.nextInt();
 

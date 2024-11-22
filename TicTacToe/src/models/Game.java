@@ -16,6 +16,15 @@ public class Game {
     private Board board;
     private GameState gameState;
     private int nextMovePlayerIndex;
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+
     private Player winner;
     private List<Move> moves;
 
@@ -121,16 +130,67 @@ public class Game {
         return gameState;
     }
 
+    private boolean validateMove(Move move){
+        int col= move.getCell().getCol();
+        int row= move.getCell().getRow();
+
+        if(col>=board.getSize()){
+            return false;
+        }
+
+        if(row>=board.getSize()){
+            return false;
+        }
+
+        if(board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY)){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean checkWinner(Board board,Move move){
+        for(WinningStrategy winningStrategy:winningStrategies){
+            if(winningStrategy.checkWinner(board,move)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void undoMove(){
+        if(moves.size()==0){
+            System.out.println("No more moves to undo");
+            return;
+        }
+
+        Move lastMove=moves.get(moves.size()-1);
+        moves.remove(moves.size()-1);
+
+        int col=lastMove.getCell().getCol();
+        int row=lastMove.getCell().getRow();
+
+        Cell cell=board.getBoard().get(row).get(col);
+        cell.setPlayer(null);
+        cell.setCellState(CellState.EMPTY);
+
+        for(WinningStrategy winningStrategy:winningStrategies){
+            winningStrategy.undoGame(board,lastMove);
+        }
+    }
     public void makeMove() {
         Player currentMovePlayer=players.get(nextMovePlayerIndex);
 
         System.out.println("It is "+currentMovePlayer.getName() +"s turn" + ".Please make a move"  );
 
-        Move move =currentMovePlayer.makeMove();
+        Move move =currentMovePlayer.makeMove(board);
 
         System.out.println("Current move is "+move.getCell().getRow() + " | "+move.getCell().getCol());
 
-        //TODO //Validation
+        if(!validateMove(move)){
+            System.out.println("Invalid move. Please try again");
+            return;
+        }
 
         int row=move.getCell().getRow();
         int col=move.getCell().getCol();
@@ -141,5 +201,18 @@ public class Game {
 
         Move finalMove=new Move(cellToChange,currentMovePlayer);
         moves.add(finalMove);
+
+        nextMovePlayerIndex+=1;
+        nextMovePlayerIndex%=players.size();
+
+        if(checkWinner(board,finalMove)){
+            gameState=GameState.WIN;
+            winner=currentMovePlayer;
+        }
+        else if(moves.size()==board.getSize()*board.getSize()){
+            gameState=GameState.DRAW;
+        }
+
+
     }
 }

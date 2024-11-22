@@ -14,10 +14,10 @@ public class Cell {
 
     public void printCell(){
         if(cellState == CellState.EMPTY){
-            System.out.println("| - |");
+            System.out.print("| - |");
         }
         else if(cellState == CellState.FILLED){
-            System.out.println("| "+player.getSymbol().getAchar()+" |");
+            System.out.print("| "+player.getSymbol().getAchar()+" |");
         }
     }
 

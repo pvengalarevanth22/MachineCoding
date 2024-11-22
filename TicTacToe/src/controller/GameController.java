@@ -24,10 +24,18 @@ public class GameController { //Stateless
         game.printBoard();
     }
 
-    public GameState checkState(Game game) {
-        return game.getGameState();
+    public String getWinner(Game game) {
+        return game.getWinner().getName();
     }
     public void makeMove(Game game) {
         game.makeMove();
+    }
+
+    public GameState checkGameState(Game game) {
+        return game.getGameState();
+    }
+
+    public void undoLastMove(Game game) {
+        game.undoMove();
     }
 }

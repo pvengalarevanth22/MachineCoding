@@ -1,7 +1,10 @@
 package strategies;
 
 import models.Board;
+import models.Move;
 
 public interface WinningStrategy {
-    void checkWinner(Board board);
+    boolean checkWinner(Board board, Move move);
+
+    void undoGame(Board board, Move move);
 }
