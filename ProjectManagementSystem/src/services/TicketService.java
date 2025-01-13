@@ -41,42 +41,42 @@ public class TicketService {
         ticket.setEntryTime(new Date());
 
         //fetch gate based on gateId from Db
-        Optional<Gate> optionalGate=gateRepository.getGateById(gateId);
-        if(optionalGate.isEmpty()){
+        Optional<Gate> optionalGate = gateRepository.getGateById(gateId);
+        if (optionalGate.isEmpty()) {
             throw new GateNotFoundException();
         }
-        Gate gate=optionalGate.get();
+        Gate gate = optionalGate.get();
         ticket.setGate(gate);
 
         ticket.setOperator(gate.getOperator());
 
         //If Vehicle is found in db return that db otherwise create new vehicle in db
         Vehicle savedVehicle;
-        Optional<Vehicle> OptionalVehicle=vehicleRepository.findVehicleByNumber(vehicleNumber);
-        if(OptionalVehicle.isEmpty()){
-            Vehicle vehicle=new Vehicle();
+        Optional<Vehicle> OptionalVehicle = vehicleRepository.findVehicleByNumber(vehicleNumber);
+        if (OptionalVehicle.isEmpty()) {
+            Vehicle vehicle = new Vehicle();
             vehicle.setVehicleType(vehicleType);
             vehicle.setNameOfOwner(nameOfOwner);
             vehicle.setVehicleNumber(vehicleNumber);
-            savedVehicle=vehicleRepository.save(vehicle);
-        }else{
-            savedVehicle=OptionalVehicle.get();
+            savedVehicle = vehicleRepository.save(vehicle);
+        } else {
+            savedVehicle = OptionalVehicle.get();
         }
         ticket.setVehicle(savedVehicle);
 
-        //get slotAllotment Type from Parking Repository
-        SlotAllotmentStrategyType slotAllotmentStrategyType=parkingLotRepository.getParkingLotByGateId(gateId).getSlotAllotmentStrategyType();
+            //get slotAllotment Type from Parking Repository
+            SlotAllotmentStrategyType slotAllotmentStrategyType = parkingLotRepository.getParkingLotForGate(gate).getSlotAllotmentStrategyType();
 
-        //get SlotAllotmentStrategy from factory
-        SlotAllotmentStrategy slotAllotmentStrategy = SlotAllotmentStrategyFactory.getSlotAllotmentStrategy(slotAllotmentStrategyType);
+            //get SlotAllotmentStrategy from factory
+            SlotAllotmentStrategy slotAllotmentStrategy = SlotAllotmentStrategyFactory.getSlotAllotmentStrategy(slotAllotmentStrategyType);
 
-        ticket.setParkingSpot(
-                slotAllotmentStrategy.getSlot(vehicleType,gate)
-        );
+            ticket.setParkingSpot(
+                    slotAllotmentStrategy.getSlot(vehicleType, gate)
+            );
 
-        ticket.setTicketNumber("TICKET -"+ticket.getId());
+            ticket.setTicketNumber("TICKET -" + ticket.getId());
 
-        return ticketRepository.save(ticket);
+            return ticketRepository.save(ticket);
 
     }
 }
